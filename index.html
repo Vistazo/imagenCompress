@@ -149,8 +149,10 @@ function processFile(file) {
       let canvas = document.createElement('canvas');
       let ctx = canvas.getContext("2d");
 
-      canvas.width = rawImage.width;
-      canvas.height = rawImage.height;
+      const targetWidth = 700;
+      const targetHeight = 900;
+      canvas.width = targetWidth;   #rawImage.width;
+      canvas.height = targetheight;   #rawImage.height;
       ctx.drawImage(rawImage, 0, 0);
 
       canvas.toBlob(function (blob) {
