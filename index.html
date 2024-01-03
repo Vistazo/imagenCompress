@@ -144,33 +144,44 @@ function processFile(file) {
     rawImage.src = URL.createObjectURL(file);
   })
   .then(function (rawImage) {
-    // Convert image to webp ObjectURL via a canvas blob
+    // Resize the image proportionally to fit within 700x900
+    const targetWidth = 700;
+    const targetHeight = 900;
+    let aspectRatio = rawImage.width / rawImage.height;
+
+    let newWidth, newHeight;
+    if (aspectRatio > targetWidth / targetHeight) {
+      newWidth = targetWidth;
+      newHeight = newWidth / aspectRatio;
+    } else {
+      newHeight = targetHeight;
+      newWidth = newHeight * aspectRatio;
+    }
+
+    // Create a canvas and draw the resized image
+    let canvas = document.createElement('canvas');
+    let ctx = canvas.getContext("2d");
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+    ctx.drawImage(rawImage, 0, 0, newWidth, newHeight);
+
+    // Convert image to JPEG ObjectURL via a canvas blob
     return new Promise(function (resolve, reject) {
-      let canvas = document.createElement('canvas');
-      let ctx = canvas.getContext("2d");
-
-      const targetWidth = 750;
-      const targetHeight = 900;
-      canvas.width = rawImage.width;
-      canvas.height = rawImage.height;
-      ctx.drawImage(rawImage, 0, 0);
-
       canvas.toBlob(function (blob) {
         resolve(URL.createObjectURL(blob));
       }, "image/jpeg", 0.50);
-      // }, "image/webp");
     });
   })
   .then(function (imageURL) {
     // Load image for display on the page
     return new Promise(function (resolve, reject) {
-      let scaledImg = new Image();
+      let resizedImg = new Image();
 
-      scaledImg.addEventListener("load", function () {
-        resolve({imageURL, scaledImg});
+      resizedImg.addEventListener("load", function () {
+        resolve({imageURL, resizedImg});
       });
 
-      scaledImg.setAttribute("src", imageURL);
+      resizedImg.setAttribute("src", imageURL);
     });
   })
   .then(function (data) {
@@ -179,7 +190,7 @@ function processFile(file) {
 
     imageLink.setAttribute("href", data.imageURL);
     imageLink.setAttribute('download', `${file.name.replace('.png', '').replace('.jpg', '').replace('.jpeg', '')}.jpg`);
-    imageLink.appendChild(data.scaledImg);
+    imageLink.appendChild(data.resizedImg);
 
     imageBox.innerHTML = "";
     imageBox.appendChild(imageLink);
