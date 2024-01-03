@@ -151,8 +151,8 @@ function processFile(file) {
 
       const targetWidth = 700;
       const targetHeight = 900;
-      canvas.width = targetWidth;   #rawImage.width;
-      canvas.height = targetheight;   #rawImage.height;
+      canvas.width = targetWidth;   //rawImage.width;
+      canvas.height = targetheight;   //rawImage.height;
       ctx.drawImage(rawImage, 0, 0);
 
       canvas.toBlob(function (blob) {
